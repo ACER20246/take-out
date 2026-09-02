@@ -10,9 +10,8 @@ public interface EmployeeMapper {
     /**
      * 根据用户名查询员工
      * @param username
-     * @return
      */
-    @Select("select * from employee where username = #{username}")
+    @Select("SELECT * FROM employee WHERE username = #{username}")
     Employee getByUsername(String username);
 
 }
