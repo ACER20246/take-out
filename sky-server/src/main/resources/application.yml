@@ -27,12 +27,26 @@ logging:
         mapper: debug
         service: info
         controller: info
+    org:
+      springframework:
+        security:
+          access: DEBUG
+      security:
+        web:
+          access: DEBUG
+
 
 sky:
   jwt:
     # 设置jwt签名加密时使用的秘钥
-    admin-secret-key: itcast
+    admin-secret-key: ${JWT_ADMIN_SECRET_KEY:default_32byte_key_1234567890123456}
     # 设置jwt过期时间
     admin-ttl: 7200000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+
+springdoc:
+  packages-to-scan: com.sky.controller
+
+knife4j:
+  enable: true
