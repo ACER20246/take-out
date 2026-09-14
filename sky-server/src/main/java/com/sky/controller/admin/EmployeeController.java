@@ -113,8 +113,23 @@ public class EmployeeController {
 
     @Operation(summary = "修改员工状态", description = "修改员工状态接口")
     @PostMapping("/status/{status}")
-    public Result changeStatus(@RequestParam Long id, @PathVariable("status") Integer status){
-        employeeService.changeStatus(status,id);
+    public Result changeStatus(@RequestParam Long id, @PathVariable("status") Integer status,@AuthenticationPrincipal Long currentEmpId){
+        employeeService.changeStatus(status,id,currentEmpId);
+        return Result.success();
+    }
+
+    @Operation(summary = "根据id查询员工", description = "根据id查询员工接口")
+    @GetMapping("/{id}")
+    public Result<Employee> getById(@PathVariable Long id){
+        Employee employee = employeeService.getById(id);
+        return Result.success(employee);
+    }
+
+    @Operation(summary = "编辑员工",description = "编辑员工接口")
+    @PutMapping
+    public Result update(@RequestBody EmployeeDTO employeeDTO,@AuthenticationPrincipal Long currentEmpId){
+        log.info("编辑员工{}",employeeDTO);
+        employeeService.update(employeeDTO,currentEmpId);
         return Result.success();
     }
 }

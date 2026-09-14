@@ -44,9 +44,14 @@ sky:
     admin-ttl: 7200000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
-
 springdoc:
   packages-to-scan: com.sky.controller
 
 knife4j:
   enable: true
+
+aliyun:
+  oss:
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    region: cn-beijing
+    bucket-name: take-out-2026

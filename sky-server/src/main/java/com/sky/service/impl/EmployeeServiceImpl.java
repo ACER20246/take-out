@@ -19,8 +19,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 //import org.springframework.util.DigestUtils;
 
 @Service
@@ -77,8 +75,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setStatus(StatusConstant.ENABLE); // 设置默认状态为启用
         String encodedPassword = passwordEncoder.encode("123456");//默认密码
         employee.setPassword(encodedPassword);
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
+//        employee.setCreateTime(LocalDateTime.now());
+//        employee.setUpdateTime(LocalDateTime.now());
         employee.setCreateUser(currentEmpId);
         employee.setUpdateUser(currentEmpId);
         employeeMapper.addEmp(employee);
@@ -92,11 +90,26 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void changeStatus(Integer status, Long id) {
+    public void changeStatus(Integer status, Long id, Long currentEmpId) {
         Employee employee=Employee.builder()
                 .id(id)
                 .status(status)
+                .updateUser(currentEmpId)
                 .build();
+        employeeMapper.update(employee);
+    }
+
+    @Override
+    public Employee getById(Long id) {
+        return employeeMapper.getById(id);
+    }
+
+    @Override
+    public void update(EmployeeDTO employeeDTO,Long currentEmpId) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+//        employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser(currentEmpId);
         employeeMapper.update(employee);
     }
 }
