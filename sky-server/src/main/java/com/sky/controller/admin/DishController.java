@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +24,9 @@ public class DishController {
 
     @PostMapping
     @Operation(summary = "新增菜品", description = "新增菜品接口")
-    public Result save(@RequestBody DishDTO dishDTO) {
+    public Result save(@RequestBody DishDTO dishDTO,@AuthenticationPrincipal Long currentId) {
         log.info("新增菜品：{}", dishDTO);
-        dishService.saveWithFlavor(dishDTO);
+        dishService.saveWithFlavor(dishDTO,currentId);
         return Result.success();
     }
 }
