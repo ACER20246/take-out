@@ -7,15 +7,30 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class Knife4jConfiguration {
+    /**
+     * 管理端接口文档（员工、后台）
+     */
     @Bean
     public GroupedOpenApi adminApi() {
         return GroupedOpenApi.builder()
-
-                .group("后台管理系统接口文档")
-                .packagesToScan("com.sky.controller")
-                .pathsToMatch("/**")
+                .group("管理端接口")
+                .packagesToScan("com.sky.controller.admin")
+                .pathsToMatch("/admin/**")
                 .build();
     }
+
+    /**
+     * 用户端接口文档（小程序 / C 端）
+     */
+    @Bean
+    public GroupedOpenApi userApi() {
+        return GroupedOpenApi.builder()
+                .group("用户端接口")
+                .packagesToScan("com.sky.controller.user")
+                .pathsToMatch("/user/**")
+                .build();
+    }
+
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
