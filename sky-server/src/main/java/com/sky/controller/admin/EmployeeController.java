@@ -9,6 +9,7 @@ import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
+import com.sky.service.AuthService;
 import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
@@ -39,7 +40,8 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
     @Autowired
-    private JwtProperties jwtProperties;
+    private AuthService authService;
+
 
     /**
      * 登录
@@ -51,24 +53,8 @@ public class EmployeeController {
     @PostMapping("/login")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录：{}", employeeLoginDTO);
-
-        Employee employee = employeeService.login(employeeLoginDTO);
-
-        //登录成功后，生成jwt令牌
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
-        String token = JwtUtil.createJWT(
-                jwtProperties.getAdminSecretKey(),
-                jwtProperties.getAdminTtl(),
-                claims);
-
-        EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
-                .id(employee.getId())
-                .userName(employee.getUsername())
-                .name(employee.getName())
-                .token(token)
-                .build();
-
+        //登录成功后，生成jwt令牌,并返回empLoginVO
+        EmployeeLoginVO employeeLoginVO = authService.employeeLogin(employeeLoginDTO);
         return Result.success(employeeLoginVO);
     }
 

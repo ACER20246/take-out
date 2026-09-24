@@ -17,7 +17,7 @@ spring:
       port: ${sky.redis.port}
       database: ${sky.redis.database}
 
-mybatis:
+mybatis-plus:
   #mapper配置文件
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.sky.entity
@@ -49,6 +49,16 @@ sky:
     admin-ttl: 7200000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+
+    #    用户令牌
+    user-secret-key: ${JWT_USER_SECRET_KEY:default_32byte_key_1234567890123456}
+    user-ttl: 7200000
+    user-token-name: authentication
+  #  微信登录
+  wechat:
+    secret: ${sky.wechat.secret}
+    appid: ${sky.wechat.appid}
+
 springdoc:
   packages-to-scan: com.sky.controller
 
@@ -60,3 +70,4 @@ aliyun:
     endpoint: https://oss-cn-beijing.aliyuncs.com
     region: cn-beijing
     bucket-name: take-out-2026
+

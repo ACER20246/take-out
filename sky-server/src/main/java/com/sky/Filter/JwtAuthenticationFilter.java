@@ -1,5 +1,6 @@
 package com.sky.Filter;
 
+import com.sky.constant.JwtClaimsConstant;
 import com.sky.properties.JwtProperties;
 import com.sky.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -44,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if(token != null && !token.isEmpty()){
             try {
                 Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
-                Long empId = Long.valueOf(claims.get("empId").toString());
+                Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
                 // The admin JWT identifies an authenticated backend operator.
                 // Keep an authority so role checks remain compatible.
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -66,5 +67,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.info("进入 filterChain 前的认证对象: {}", SecurityContextHolder.getContext().getAuthentication());
         filterChain.doFilter(request, response);
         log.info("离开 filterChain 后的认证对象: {}", SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        // 只处理 /admin 下的请求
+        return !uri.startsWith("/admin");
     }
 }

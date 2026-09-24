@@ -1,5 +1,6 @@
 package com.sky.config;
 
+import com.sky.Filter.UserJwtAuthenticationFilter;
 import com.sky.properties.JwtProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +38,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.ASYNC).permitAll()
-                        .requestMatchers("/error", "/admin/employee/login").permitAll()
+                        .requestMatchers("/error", "/admin/employee/login", "/user/user/login","/user/shop/status").permitAll()
                         .requestMatchers("/doc.html", "/webjars/**", "/v3/api-docs/**", "/swagger-ui/**","/favicon.ico").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/**").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProperties), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new UserJwtAuthenticationFilter(jwtProperties), UsernamePasswordAuthenticationFilter.class)
                 .cors(cors -> {})
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(unauthorizedEntryPoint())
@@ -67,21 +71,5 @@ public class SecurityConfig {
             response.setStatus(403);
             response.getWriter().write("{\"code\":403,\"msg\":\"无权限访问\"}");
         };
-    }
-
-    // CORS配置
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // 允许所有源
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 允许的HTTP方法
-        configuration.setAllowedHeaders(Arrays.asList("*")); // 允许所有请求头
-        configuration.setExposedHeaders(Arrays.asList("token")); // 暴露token响应头
-        configuration.setAllowCredentials(true); // 允许携带凭证
-        configuration.setMaxAge(3600L); // 预检请求的缓存时间
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // 对所有路径生效
-        return source;
     }
 }
