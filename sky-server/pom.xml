@@ -136,6 +136,13 @@
             <artifactId>alibabacloud-oss-v2</artifactId>
         </dependency>
 
+<!--        配置 Jackson 对 Java 8 日期时间类型的支持-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <!-- 版本号跟随 Spring Boot 的 Jackson 版本即可 -->
+        </dependency>
+
     </dependencies>
 
     <build>

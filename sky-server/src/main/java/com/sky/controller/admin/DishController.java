@@ -11,10 +11,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/admin/dish")
@@ -25,11 +27,17 @@ public class DishController {
     @Autowired
     private DishService dishService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @PostMapping
     @Operation(summary = "新增菜品", description = "新增菜品接口")
     public Result save(@RequestBody DishDTO dishDTO,@AuthenticationPrincipal Long currentId) {
         log.info("新增菜品：{}", dishDTO);
         dishService.saveWithFlavor(dishDTO,currentId);
+        //清理缓存
+        String key = "dish_"+dishDTO.getCategoryId();
+        clearcache(key);
         return Result.success();
     }
 
@@ -40,11 +48,14 @@ public class DishController {
         PageResult pageResult = dishService.pageQuery(dishPageQueryDTO);
         return Result.success(pageResult);
     }
+
     @DeleteMapping
     @Operation(summary = "删除菜品", description = "删除菜品接口")
     public  Result delete(@RequestParam List<Long> ids){
         log.info("删除菜品：{}", ids);
         dishService.delete(ids);
+        //将所有菜品缓存数据删除
+        clearcache("dish_*");
         return Result.success();
     }
     @Operation(summary = "根据ID查询菜品", description = "根据ID查询菜品接口")
@@ -66,6 +77,8 @@ public class DishController {
     public Result update(@RequestBody DishDTO dishDTO,@AuthenticationPrincipal Long currentId) {
         log.info("修改菜品：{}", dishDTO);
         dishService.updateWithFlavor(dishDTO,currentId);
+        //将所有菜品缓存数据删除
+        clearcache("dish_*");
         return Result.success();
     }
 
@@ -74,6 +87,8 @@ public class DishController {
     public Result<String> updateStatus(@PathVariable Integer status,Long id) {
         log.info("修改菜品状态：{}", status);
         dishService.changeStatus(status,id);
+        //将所有菜品缓存数据删除
+        clearcache("dish_*");
         return Result.success("菜品状态修改成功");
     }
     /**
@@ -86,5 +101,15 @@ public class DishController {
     public Result<List<Dish>> list(Long categoryId){
         List<Dish> list = dishService.list(categoryId);
         return Result.success(list);
+    }
+
+    /**
+     * 清理缓存数据
+     * @param pattern
+     */
+    private void clearcache(String pattern){
+        //将所有菜品缓存数据删除
+        Set keys = redisTemplate.keys(pattern);
+        redisTemplate.delete(keys);
     }
 }
