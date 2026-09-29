@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
             throw new LoginFailedException(MessageConstant.LOGIN_FAILED);
         }
         //判断是否为新用户
-        User user = userMapper.getByOpenid();
+        User user = userMapper.getByOpenid(openid);
         if(user==null){
             user = User.builder()
                     .createTime(LocalDateTime.now())
