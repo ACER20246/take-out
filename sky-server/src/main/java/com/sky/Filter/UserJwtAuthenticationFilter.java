@@ -35,13 +35,6 @@ public class UserJwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
-        // 跳过 OPTIONS 预检请求
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         // 从请求头中获取用户端 token
         String token = request.getHeader(jwtProperties.getUserTokenName());
 

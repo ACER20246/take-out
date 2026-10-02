@@ -33,12 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // 跳过OPTIONS预检请求
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         //在HttpserverRequest中获取请求头中的token
         String token = request.getHeader(jwtProperties.getAdminTokenName());
 
@@ -46,8 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
                 Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
-                // The admin JWT identifies an authenticated backend operator.
-                // Keep an authority so role checks remain compatible.
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         empId,
                         null,
